@@ -29,7 +29,10 @@ export default class Canvas {
     this.canvas.width = dimensions.x;
     this.canvas.height = dimensions.y;
   };
-  render = () => {
+  clear = () => {
     this.context.clearRect(0, 0, this.dimensions.x, this.dimensions.y);
+  };
+  render = () => {
+    this.clear();
   };
 }

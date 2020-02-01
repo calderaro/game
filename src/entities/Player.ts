@@ -4,7 +4,10 @@ import Canvas from "../utils/Canvas";
 interface VectorInterface {
   x: number;
   y: number;
-  addX: (VectorInterface) => VectorInterface;
+  addX: (VectorInterface) => void;
+  add: (VectorInterface) => void;
+  multiply: (VectorInterface) => void;
+  clone: () => VectorInterface;
 }
 
 const movementsX = new Map([
@@ -19,13 +22,17 @@ const movementsY = new Map([
 ]);
 
 export default class Player {
-  private pos: VectorInterface;
   canvas: Canvas;
+  pos: VectorInterface;
+  vel: VectorInterface;
+  acc: VectorInterface;
+  dir: VectorInterface;
   constructor(x?: number, y?: number) {
     this.canvas = new Canvas(new Vector(32, 64));
     this.pos = new Vector(x, y);
     this.vel = new Vector(0, 0);
-    this.speed = 2;
+    this.acc = new Vector(2.5, 2.5);
+    this.dir = new Vector(0, 0);
   }
   getPos() {
     return this.pos;
@@ -33,14 +40,15 @@ export default class Player {
   move = (keys: string[] = []) => {
     const xDir = keys.filter(key => movementsX.has(key)).reverse()[0];
     const yDir = keys.filter(key => movementsY.has(key)).reverse()[0];
-    this.vel.x = movementsX.get(xDir) * this.speed;
-    this.vel.y = movementsY.get(yDir) * this.speed;
+    this.dir = new Vector(movementsX.get(xDir), movementsY.get(yDir));
   };
-  render(context: CanvasRenderingContext2D) {
+  tick = () => {
+    this.pos.add(this.dir.clone().multiply(this.acc));
+  };
+  render() {
     this.canvas.context.fillStyle = "red";
     this.canvas.context.fillRect(0, 0, 10, 10);
     this.canvas.context.fillStyle = "black";
-    context.drawImage(this.canvas.canvas, this.pos.x, this.pos.y);
-    this.pos = this.pos.add(this.vel);
+    this.pos.add(this.vel);
   }
 }
