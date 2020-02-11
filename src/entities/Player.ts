@@ -33,6 +33,10 @@ export default class Player {
     this.vel = new Vector(0, 0);
     this.acc = new Vector(2.5, 2.5);
     this.dir = new Vector(0, 0);
+    this.mass = 125;
+    this.force = 100;
+    this.friction = 0.8;
+    this.acc = this.force / this.mass;
   }
   getPos() {
     return this.pos;
@@ -43,12 +47,38 @@ export default class Player {
     this.dir = new Vector(movementsX.get(xDir), movementsY.get(yDir));
   };
   tick = () => {
-    this.pos.add(this.dir.clone().multiply(this.acc));
+    const acceleration = this.dir
+      .clone()
+      .multiply(new Vector(this.acc, this.acc));
+    this.vel.add(acceleration);
+
+    if (Math.abs(this.vel.x) < this.friction) {
+      this.vel.subtractX(this.vel);
+    } else {
+      this.vel.multiplyX(new Vector(this.friction, 0));
+    }
+    if (Math.abs(this.vel.y) < this.friction) {
+      this.vel.subtractY(this.vel);
+    } else {
+      this.vel.multiplyY(new Vector(0, this.friction));
+    }
+    // this.vel.multiply(friction);
+    console.log(Math.abs(this.vel.x));
+    this.pos.add(this.vel);
+    console.log(this.pos, this.vel, acceleration, this.acc);
   };
   render() {
     this.canvas.context.fillStyle = "red";
     this.canvas.context.fillRect(0, 0, 10, 10);
     this.canvas.context.fillStyle = "black";
-    this.pos.add(this.vel);
   }
 }
+
+/*
+
+  maybe would be better do the simulation only calculating forces and then map that to acceleration/velocity/position at the end?
+  i could first determine the Net Force of the player.
+
+  been the NET FORCE the sum of all of the forces it includes force of friction too
+  that way the object will no accelerate infinitely
+*/
