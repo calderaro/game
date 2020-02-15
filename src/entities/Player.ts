@@ -1,14 +1,5 @@
-import Vector from "victor";
+import Vector from "../utils/Vector";
 import Canvas from "../utils/Canvas";
-
-interface VectorInterface {
-  x: number;
-  y: number;
-  addX: (VectorInterface) => void;
-  add: (VectorInterface) => void;
-  multiply: (VectorInterface) => void;
-  clone: () => VectorInterface;
-}
 
 const movementsX = new Map([
   ["KeyA", -1],
@@ -23,15 +14,17 @@ const movementsY = new Map([
 
 export default class Player {
   canvas: Canvas;
-  pos: VectorInterface;
-  vel: VectorInterface;
-  acc: VectorInterface;
-  dir: VectorInterface;
-  constructor(x?: number, y?: number) {
+  pos: Vector;
+  vel: Vector;
+  dir: Vector;
+  mass: number;
+  force: number;
+  friction: number;
+  acc: number;
+  constructor(initialPosition: Vector) {
     this.canvas = new Canvas(new Vector(32, 64));
-    this.pos = new Vector(x, y);
+    this.pos = initialPosition;
     this.vel = new Vector(0, 0);
-    this.acc = new Vector(2.5, 2.5);
     this.dir = new Vector(0, 0);
     this.mass = 125;
     this.force = 100;
@@ -39,7 +32,10 @@ export default class Player {
     this.acc = this.force / this.mass;
   }
   getPos() {
-    return this.pos;
+    return new Vector(
+      this.pos.x - this.canvas.canvas.width / 2,
+      this.pos.y - this.canvas.canvas.height / 2
+    );
   }
   move = (keys: string[] = []) => {
     const xDir = keys.filter(key => movementsX.has(key)).reverse()[0];
@@ -62,10 +58,7 @@ export default class Player {
     } else {
       this.vel.multiplyY(new Vector(0, this.friction));
     }
-    // this.vel.multiply(friction);
-    console.log(Math.abs(this.vel.x));
     this.pos.add(this.vel);
-    console.log(this.pos, this.vel, acceleration, this.acc);
   };
   render() {
     this.canvas.context.fillStyle = "red";

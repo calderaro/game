@@ -1,32 +1,27 @@
-import Vector from "victor";
 import Canvas from "../utils/Canvas";
+import Vector from "../utils/Vector";
 
-interface VectorInterface {
-  x: number;
-  y: number;
-  addX: (VectorInterface) => void;
-  addY: (VectorInterface) => void;
-  add: (VectorInterface) => void;
-  clone: (VectorInterface) => VectorInterface;
-}
-
-export default class Player {
-  pos: VectorInterface;
+export default class Projectile {
+  pos: Vector;
+  vel: Vector;
+  dir: number;
   canvas: Canvas;
-  constructor(x?: number, y?: number) {
+  constructor(initialPosition: Vector, dirPosition: Vector) {
     this.canvas = new Canvas(new Vector(16, 16));
-    this.pos = new Vector(100, 100);
+    this.pos = initialPosition;
     this.vel = new Vector(1, 1);
+    this.dir = initialPosition.angle(dirPosition);
   }
   getPos() {
     return this.pos;
   }
   tick = () => {
-    this.pos.add(this.vel);
+    const vel = new Vector(0, 0).addAngle(this.dir).multiply(new Vector(5, 5));
+    this.pos.add(vel);
   };
   render() {
     this.canvas.clear();
-
+    this.canvas.context.fillStyle = "#58ACFA";
     this.canvas.context.beginPath();
     this.canvas.context.arc(
       this.canvas.canvas.width / 2,
@@ -35,8 +30,8 @@ export default class Player {
       0,
       2 * Math.PI
     );
-    this.canvas.context.stroke();
-
+    this.canvas.context.fill();
+    /*
     this.canvas.context.strokeStyle = "rgba(0, 0, 0, 1)";
     this.canvas.context.beginPath();
     this.canvas.context.rect(
@@ -46,6 +41,6 @@ export default class Player {
       this.canvas.canvas.height
     );
     this.canvas.context.stroke();
-    this.canvas.context.strokeStyle = "black";
+    this.canvas.context.strokeStyle = "black";*/
   }
 }

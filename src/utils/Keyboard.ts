@@ -2,6 +2,7 @@ import mitt from "mitt";
 
 export default class Keyboard {
   emitter: mitt.Emitter;
+  keys: string[];
   constructor() {
     this.keys = [];
     this.emitter = mitt();
